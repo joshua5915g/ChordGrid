@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0F172A;
+  --foreground: #FFFFFF;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Vibrating string animation */
+@keyframes string-vibrate {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-1.8px); }
+  50% { transform: translateY(1.8px); }
+  75% { transform: translateY(-0.8px); }
+  100% { transform: translateY(0); }
+}
+
+.animate-vibrate {
+  animation: string-vibrate 0.12s ease-in-out infinite alternate;
+}
+
+/* Subtle woodgrain backdrop pattern */
+.wood-gradient {
+  background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
+}
+
+.fretboard-wood {
+  background: linear-gradient(180deg, #182234 0%, #111a28 50%, #151f30 100%);
+}

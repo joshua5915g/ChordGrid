@@ -1,0 +1,82 @@
+[
+  {
+    "id": "guitar-standard",
+    "instrument": "guitar",
+    "name": "Standard (EADGBE)",
+    "notes": ["E2", "A2", "D3", "G3", "B3", "E4"],
+    "frequencies": [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+    "description": "Standard modern 6-string guitar concert tuning."
+  },
+  {
+    "id": "guitar-drop-d",
+    "instrument": "guitar",
+    "name": "Drop D (DADGBE)",
+    "notes": ["D2", "A2", "D3", "G3", "B3", "E4"],
+    "frequencies": [73.42, 110.00, 146.83, 196.00, 246.94, 329.63],
+    "description": "Lowest E string dropped a full tone to D for heavy bass."
+  },
+  {
+    "id": "guitar-dadgad",
+    "instrument": "guitar",
+    "name": "DADGAD (Celtic)",
+    "notes": ["D2", "A2", "D3", "G3", "A3", "D4"],
+    "frequencies": [73.42, 110.00, 146.83, 196.00, 220.00, 293.66],
+    "description": "Modal DADGAD tuning popular in Celtic, folk, and ambient styles."
+  },
+  {
+    "id": "guitar-open-d",
+    "instrument": "guitar",
+    "name": "Open D (DADF#AD)",
+    "notes": ["D2", "A2", "D3", "F#3", "A3", "D4"],
+    "frequencies": [73.42, 110.00, 146.83, 185.00, 220.00, 293.66],
+    "description": "Open D chord tuning, perfect for slide and blues."
+  },
+  {
+    "id": "guitar-open-g",
+    "instrument": "guitar",
+    "name": "Open G (DGDGBD)",
+    "notes": ["D2", "G2", "D3", "G3", "B3", "D4"],
+    "frequencies": [73.42, 98.00, 146.83, 196.00, 246.94, 293.66],
+    "description": "Classic blues and Rolling Stones open G chord tuning."
+  },
+  {
+    "id": "guitar-half-step",
+    "instrument": "guitar",
+    "name": "Half Step Down (Eb Ab Db Gb Bb Eb)",
+    "notes": ["Eb2", "Ab2", "Db3", "Gb3", "Bb3", "Eb4"],
+    "frequencies": [77.78, 103.83, 138.59, 185.00, 233.08, 311.13],
+    "description": "Hendrix/SRV warm resonant down-tuned setup."
+  },
+  {
+    "id": "ukulele-standard",
+    "instrument": "ukulele",
+    "name": "Standard High-G (GCEA)",
+    "notes": ["G4", "C4", "E4", "A4"],
+    "frequencies": [392.00, 261.63, 329.63, 440.00],
+    "description": "Standard re-entrant soprano/concert/tenor tuning."
+  },
+  {
+    "id": "ukulele-low-g",
+    "instrument": "ukulele",
+    "name": "Low-G Linear (GCEA)",
+    "notes": ["G3", "C4", "E4", "A4"],
+    "frequencies": [196.00, 261.63, 329.63, 440.00],
+    "description": "Linear tuning with wound 4th string for deep extended range."
+  },
+  {
+    "id": "ukulele-baritone",
+    "instrument": "ukulele",
+    "name": "Baritone (DGBE)",
+    "notes": ["D3", "G3", "B3", "E4"],
+    "frequencies": [146.83, 196.00, 246.94, 329.63],
+    "description": "Matches top 4 strings of guitar standard."
+  },
+  {
+    "id": "ukulele-d-tuning",
+    "instrument": "ukulele",
+    "name": "D-Tuning (ADF#B)",
+    "notes": ["A4", "D4", "F#4", "B4"],
+    "frequencies": [440.00, 293.66, 369.99, 493.88],
+    "description": "Traditional English / Canadian high bright tuning."
+  }
+]
