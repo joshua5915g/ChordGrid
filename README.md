@@ -1,98 +1,153 @@
-# ChordGrid 🎸
+﻿# ChordGrid
 
-> An interactive Ukulele & Guitar Fretboard Visualizer and Physical-Modeling Audio Synthesizer built with **Next.js 15 (App Router)**, **React 19**, **Tailwind CSS**, and **FastAPI**.
+Interactive guitar and ukulele chord explorer with a live fretboard, alternate tunings, capo controls, and browser-based audio playback.
 
-![ChordGrid Preview](https://img.shields.io/badge/Studio-Acoustic-amber)
-![Next.js](https://img.shields.io/badge/Next.js-15.1-black?logo=next.js)
-![React](https://img.shields.io/badge/React-19-blue?logo=react)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-teal?logo=fastapi)
-![Python](https://img.shields.io/badge/Python-3.14-yellow?logo=python)
+[![Next.js](https://img.shields.io/badge/Next.js-15.1-black?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B?logo=opensourceinitiative&logoColor=white)](LICENSE)
 
----
+## Overview
 
-## 🌟 Key Features
+ChordGrid is a full-stack music practice app for guitar and ukulele players. It renders interactive chord diagrams, supports alternate tunings and capo settings, and plays strings with a browser audio engine that simulates realistic plucked-string motion.
 
-- **Dual Instrument Engine:** Instant toggle between Acoustic/Electric Guitar (6-string `EADGBE`) and Ukulele (4-string `GCEA`).
-- **Mathematical SVG Fretboard:** Parametric fret spacing calculated using the physical acoustic 12th-root-of-2 logarithmic rule ($d_n = L \cdot (1 - 2^{-n/12})$).
-- **Physical Pluck & Strummer Engine:** Zero-latency Web Audio API synthesizers simulating staggered downstrokes ($15\text{ms}-40\text{ms}$ delay), upstrokes, arpeggios, and per-string plucking with acoustic body resonance.
-- **Dynamic Alternate Tunings:**
-  - Guitar: Standard, Drop D, DADGAD, Open D, Open G, Half Step Down.
-  - Ukulele: Standard High-G, Low-G Linear, Baritone, D-Tuning.
-- **Multiple Voicings:** Navigate through alternate fingerings and movable barre shapes for any chord.
-- **Visual Capo Engine:** Snap a capo across Frets 1–7 with real-time automatic pitch and audio transposition.
-- **Dual Layouts & Lefty Mode:** Toggle between Horizontal Studio view and Vertical Chord-Sheet Box view, plus instant left-handed mirroring.
-- **Reverse Chord Detection:** Click on custom frets to audition notes; the backend harmonically identifies chord candidates in real-time.
-- **Zero-Latency Offline Fallback:** Complete embedded client-side dataset ensures 100% interactive usability even when offline.
+The app is built around a Next.js frontend and a FastAPI backend. The frontend handles the visual fretboard, controls, and sound engine, while the backend serves chord data, tuning presets, and reverse-chord identification based on a selected finger pattern.
 
----
+## Features
 
-## 🚀 Quick Start
+- Dual instrument support for guitar and ukulele
+- Interactive SVG fretboard with accurate fret spacing and note layout
+- Alternate tunings including Drop D, DADGAD, Open G, and more
+- Capo and left-handed viewing options
+- Multiple voicing navigation for each chord
+- Strum, arpeggio, and rhythm control
+- Reverse chord detection from custom fret input
+- Offline fallback chord data for a smoother local experience
+- Dark, studio-inspired UI optimized for practice and learning
 
-### 1. Backend (`/backend`)
-```bash
-cd backend
+## Tech Stack
 
-# Create and activate virtual environment
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
+### Frontend
 
-# Install dependencies
-pip install -r requirements.txt
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- Web Audio API
 
-# Start FastAPI development server
-uvicorn app.main:app --reload --port 8000
-```
-- API Docs: `http://localhost:8000/docs`
-- Healthcheck: `http://localhost:8000/api/health`
+### Backend
 
-### 2. Frontend (`/frontend`)
-```bash
-cd frontend
+- FastAPI
+- Python 3.11+
+- Pydantic
+- Uvicorn
 
-# Install dependencies
-npm install
-
-# Start Next.js development server
-npm run dev
-```
-- Application: `http://localhost:3000`
-
----
-
-## 📂 Architecture
+## Project Structure
 
 ```text
 ChordGrid/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                  # FastAPI application entry & CORS
-│   │   ├── models/                  # Pydantic schemas (Chord, Tuning, Identify)
-│   │   ├── routes/                  # API routers (/chords, /tunings, /identify)
-│   │   └── data/                    # JSON datasets for guitar, ukulele, & tunings
-│   ├── requirements.txt
-│   └── generate_data.py
+│   │   ├── main.py
+│   │   ├── data/
+│   │   │   ├── guitar_chords.json
+│   │   │   ├── tunings.json
+│   │   │   └── ukulele_chords.json
+│   │   ├── models/
+│   │   │   └── chord.py
+│   │   └── routes/
+│   │       ├── chords.py
+│   │       ├── identify.py
+│   │       └── tunings.py
+│   ├── generate_data.py
+│   └── requirements.txt
 ├── frontend/
 │   ├── app/
-│   │   ├── layout.tsx               # Studio Acoustic dark layout shell
-│   │   ├── page.tsx                 # Main visualizer page
-│   │   └── globals.css              # Custom studio gradients & Tailwind directives
 │   ├── components/
-│   │   ├── Fretboard/SvgFretboard   # Parametric SVG fretboard renderer
-│   │   ├── Controls/                # InstrumentToggle, ChordSelector, VoicingNavigator, FretboardOptions
-│   │   ├── Audio/AudioToolbar       # Strum down/up, arpeggio, tempo & volume controls
-│   │   └── UI/                      # Header and ChordInspector components
 │   ├── lib/
-│   │   ├── audio/StrummerEngine.ts  # Web Audio physical pluck synthesis
-│   │   ├── defaultChords.ts         # Embedded offline fallback dictionary
-│   │   └── api.ts                   # Backend client
-│   └── package.json
-└── README.md
+│   ├── public/
+│   ├── next.config.ts
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+├── .gitignore
+├── README.md
+└── LICENSE
 ```
 
----
+## Local Development
 
-## 📄 License
-MIT License. Created by [joshua5915g](https://github.com/joshua5915g).
+### Prerequisites
+
+- Node.js 18+
+- Python 3.11+
+- npm
+
+### 1. Backend
+
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+.\venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+The backend exposes Swagger and Redoc docs at:
+
+- http://localhost:8000/docs
+- http://localhost:8000/redoc
+
+### 2. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Then open:
+
+- http://localhost:3000
+
+## API Overview
+
+The backend includes a few core endpoints:
+
+- `GET /api/health` — health status
+- `GET /api/instruments` — available instruments
+- `GET /api/chords` — fetch chord voicings by instrument, root, and quality
+- `GET /api/tunings` — tuning presets
+- `POST /api/identify` — reverse identification from a fret pattern
+
+## Why This Project Exists
+
+ChordGrid is designed to help musicians learn and explore chord shapes more intuitively. Rather than relying on static chord charts, it offers a dynamic fretboard that updates instantly as you change instruments, tunings, voicings, and capo settings.
+
+It blends visual learning with real-time playback so users can both see and hear how chords are formed.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your edits
+4. Commit with a clear message
+5. Open a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Built With
+
+Next.js • React • TypeScript • Tailwind CSS • FastAPI • Python
