@@ -16,6 +16,7 @@ import { ChordInspector } from '@/components/UI/ChordInspector';
 import { getChordVoicing } from '@/src/lib/chords';
 import type { InstrumentTuning } from '@/src/types/chord';
 import Fretboard from '@/src/components/Fretboard';
+import { Strummer } from '@/src/components/Strummer';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
@@ -212,6 +213,17 @@ export default function Home() {
           frequencies={activeFrequencies}
           frets={currentChord.frets}
           onPlayString={(idx) => {
+            setActiveStringIndex(idx);
+            setTimeout(() => {
+              setActiveStringIndex((prev) => (prev === idx ? null : prev));
+            }, 250);
+          }}
+        />
+
+        <Strummer
+          frequencies={activeFrequencies}
+          frets={currentChord.frets}
+          onStringPlay={(idx) => {
             setActiveStringIndex(idx);
             setTimeout(() => {
               setActiveStringIndex((prev) => (prev === idx ? null : prev));
