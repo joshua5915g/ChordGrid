@@ -1,5 +1,23 @@
 import { ChordQuality, ChordVoicing, InstrumentName, InstrumentTuning, RootNote } from '@/src/types/chord';
 
+export type LegacyChordQuality = ChordQuality | 'maj' | 'min' | 'maj7' | 'm7' | 'sus4' | 'sus2' | 'dim' | 'aug' | '9';
+
+export function normalizeChordQuality(quality: string): ChordQuality {
+  switch (quality) {
+    case 'maj':
+    case 'major':
+      return 'major';
+    case 'min':
+    case 'minor':
+      return 'minor';
+    case '7':
+    case 'dom7':
+      return '7';
+    default:
+      return 'major';
+  }
+}
+
 export const INSTRUMENT_TUNINGS: Record<InstrumentName, InstrumentTuning> = {
   ukulele: {
     id: 'ukulele',
@@ -106,17 +124,18 @@ export function getChordLabel(root: RootNote, quality: ChordQuality): string {
 export function getChordVoicing(
   instrument: InstrumentName,
   root: RootNote,
-  quality: ChordQuality
+  quality: LegacyChordQuality | ChordQuality | string
 ): ChordVoicing {
   const tuning = INSTRUMENT_TUNINGS[instrument];
-  const frets = CHORD_LIBRARY[instrument]?.[root]?.[quality] ?? CHORD_LIBRARY[instrument].C[quality];
+  const normalizedQuality = normalizeChordQuality(String(quality));
+  const frets = CHORD_LIBRARY[instrument]?.[root]?.[normalizedQuality] ?? CHORD_LIBRARY[instrument].C[normalizedQuality];
 
   return {
     root,
-    quality,
+    quality: normalizedQuality,
     instrument,
     frets: frets.slice(0, tuning.strings.length),
-    label: getChordLabel(root, quality),
+    label: getChordLabel(root, normalizedQuality),
   };
 }
 

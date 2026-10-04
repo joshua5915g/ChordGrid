@@ -11,9 +11,11 @@ import { InstrumentToggle } from '@/components/Controls/InstrumentToggle';
 import { ChordSelector } from '@/components/Controls/ChordSelector';
 import { VoicingNavigator } from '@/components/Controls/VoicingNavigator';
 import { FretboardOptions } from '@/components/Controls/FretboardOptions';
-import { SvgFretboard } from '@/components/Fretboard/SvgFretboard';
 import { AudioToolbar } from '@/components/Audio/AudioToolbar';
 import { ChordInspector } from '@/components/UI/ChordInspector';
+import { getChordVoicing } from '@/src/lib/chords';
+import type { InstrumentTuning } from '@/src/types/chord';
+import Fretboard from '@/src/components/Fretboard';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
@@ -90,6 +92,18 @@ export default function Home() {
       voicing_index: 0
     };
   }, [voicings, voicingIndex, root, quality, instrument]);
+
+  const dynamicVoicing = useMemo(() => {
+    const normalizedRoot = root as 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
+    return getChordVoicing(instrument, normalizedRoot, quality);
+  }, [instrument, root, quality]);
+
+  const fretboardTuning: InstrumentTuning = useMemo(() => ({
+    id: instrument,
+    name: selectedTuning.name,
+    strings: selectedTuning.notes,
+    fretCount: 15,
+  }), [instrument, selectedTuning.name, selectedTuning.notes]);
 
   // Compute live frequencies based on tuning + capo
   const activeFrequencies = useMemo(() => {
@@ -183,15 +197,13 @@ export default function Home() {
 
         {/* Dynamic SVG Fretboard Visualizer */}
         <div className="w-full flex justify-center py-2">
-          <SvgFretboard
-            chord={currentChord}
-            tuning={selectedTuning}
-            orientation={orientation}
-            isLefty={isLefty}
-            capoFret={capoFret}
-            activeStringIndex={activeStringIndex}
-            onFretClick={handleFretClick}
-            onPluckNote={handlePluckNote}
+          <Fretboard
+            tuning={fretboardTuning}
+            voicing={dynamicVoicing}
+            width={820}
+            height={260}
+            activeColor="#F59E0B"
+            fretRange={15}
           />
         </div>
 
