@@ -33,22 +33,24 @@ export default function Home() {
   const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
   const [identifiedCandidates, setIdentifiedCandidates] = useState<IdentifyCandidate[]>([]);
 
-  // Load tunings from backend on mount
+  // Load tunings from backend on mount (instrument intentionally excluded —
+  // the instrument-change effect below handles tuning selection after fetch)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    let isMounted = true;
     async function init() {
       try {
         const fetched = await fetchTunings();
-        if (fetched && fetched.length > 0) {
+        if (fetched && fetched.length > 0 && isMounted) {
           setTunings(fetched);
-          const initialTuning = fetched.find((t) => t.instrument === instrument) || fetched[0];
-          setSelectedTuning(initialTuning);
           setIsBackendConnected(true);
         }
       } catch {
-        setIsBackendConnected(false);
+        if (isMounted) setIsBackendConnected(false);
       }
     }
     init();
+    return () => { isMounted = false; };
   }, []);
 
   // Update selected tuning when instrument changes
@@ -227,9 +229,9 @@ export default function Home() {
                       {prog.name}:
                     </span>
                     <div className="flex flex-wrap gap-1.5">
-                      {prog.chords.map(([r, q]) => (
+                      {prog.chords.map(([r, q], chordIndex) => (
                         <button
-                          key={`${r}-${q}`}
+                          key={`${prog.name}-${r}-${q}-${chordIndex}`}
                           onClick={() => {
                             setRoot(r);
                             setQuality(q);

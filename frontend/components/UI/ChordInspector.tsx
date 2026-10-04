@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ChordFingering, Tuning, IdentifyCandidate } from '@/lib/types';
-import { Info, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { fretToFrequency } from '@/lib/audio/StrummerEngine';
 
 interface ChordInspectorProps {

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { ChordFingering, InstrumentType, Tuning } from '@/lib/types';
+import React, { useMemo, useId } from 'react';
+import { ChordFingering, Tuning } from '@/lib/types';
 import { fretToFrequency } from '@/lib/audio/StrummerEngine';
 
 interface SvgFretboardProps {
@@ -25,6 +25,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
   onFretClick,
   onPluckNote,
 }) => {
+  const uid = useId().replace(/:/g, '');
   const numStrings = chord.instrument === 'guitar' ? 6 : 4;
   const numFrets = 15; // Realistic fret count
 
@@ -136,24 +137,24 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
         style={{ touchAction: 'manipulation' }}
       >
         <defs>
-          <linearGradient id="fretboardWood" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`fretboardWood-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#1e293b" />
             <stop offset="50%" stopColor="#141e2e" />
             <stop offset="100%" stopColor="#1c2738" />
           </linearGradient>
 
-          <linearGradient id="nutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={`nutGradient-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#f8fafc" />
             <stop offset="100%" stopColor="#94a3b8" />
           </linearGradient>
 
-          <radialGradient id="inlayDot" cx="50%" cy="50%" r="50%">
+          <radialGradient id={`inlayDot-${uid}`} cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
             <stop offset="70%" stopColor="#cbd5e1" stopOpacity="0.7" />
             <stop offset="100%" stopColor="#64748b" stopOpacity="0.3" />
           </radialGradient>
 
-          <filter id="amberGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id={`amberGlow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -169,7 +170,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
           width={boardWidth}
           height={boardHeight}
           rx="4"
-          fill="url(#fretboardWood)"
+          fill={`url(#fretboardWood-${uid})`}
           stroke="#334155"
           strokeWidth="1.5"
         />
@@ -183,7 +184,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
                 cx={getFretCenterX(fretNum)}
                 cy={boardMargin.top + boardHeight / 2}
                 r="5.5"
-                fill="url(#inlayDot)"
+                fill={`url(#inlayDot-${uid})`}
                 className="opacity-70 pointer-events-none"
               />
             ))}
@@ -192,14 +193,14 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
               cx={getFretCenterX(doubleDotFret)}
               cy={boardMargin.top + boardHeight * 0.3}
               r="5"
-              fill="url(#inlayDot)"
+              fill={`url(#inlayDot-${uid})`}
               className="opacity-70 pointer-events-none"
             />
             <circle
               cx={getFretCenterX(doubleDotFret)}
               cy={boardMargin.top + boardHeight * 0.7}
               r="5"
-              fill="url(#inlayDot)"
+              fill={`url(#inlayDot-${uid})`}
               className="opacity-70 pointer-events-none"
             />
           </g>
@@ -214,7 +215,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
                 cx={boardMargin.left + boardWidth / 2}
                 cy={getVerticalFretCenterY(fretNum)}
                 r="5.5"
-                fill="url(#inlayDot)"
+              fill={`url(#inlayDot-${uid})`}
                 className="opacity-70 pointer-events-none"
               />
             ))}
@@ -222,14 +223,14 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
               cx={boardMargin.left + boardWidth * 0.3}
               cy={getVerticalFretCenterY(doubleDotFret)}
               r="5"
-              fill="url(#inlayDot)"
+              fill={`url(#inlayDot-${uid})`}
               className="opacity-70 pointer-events-none"
             />
             <circle
               cx={boardMargin.left + boardWidth * 0.7}
               cy={getVerticalFretCenterY(doubleDotFret)}
               r="5"
-              fill="url(#inlayDot)"
+              fill={`url(#inlayDot-${uid})`}
               className="opacity-70 pointer-events-none"
             />
           </g>
@@ -248,7 +249,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
                     y1={boardMargin.top}
                     x2={x}
                     y2={boardMargin.top + boardHeight}
-                    stroke={isNut ? 'url(#nutGradient)' : '#64748b'}
+                    stroke={isNut ? `url(#nutGradient-${uid})` : '#64748b'}
                     strokeWidth={isNut ? 6 : 2}
                     strokeLinecap="round"
                   />
@@ -281,7 +282,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
                     y1={y}
                     x2={boardMargin.left + boardWidth}
                     y2={y}
-                    stroke={isNut ? 'url(#nutGradient)' : '#64748b'}
+                    stroke={isNut ? `url(#nutGradient-${uid})` : '#64748b'}
                     strokeWidth={isNut ? 6 : 2}
                     strokeLinecap="round"
                   />
@@ -488,7 +489,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
                     cy={cy}
                     r="12"
                     fill="#f59e0b"
-                    filter="url(#amberGlow)"
+                    filter={`url(#amberGlow-${uid})`}
                     stroke="#ffffff"
                     strokeWidth="1.5"
                   />
@@ -521,7 +522,7 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
                     cy={cy}
                     r="12"
                     fill="#f59e0b"
-                    filter="url(#amberGlow)"
+                    filter={`url(#amberGlow-${uid})`}
                     stroke="#ffffff"
                     strokeWidth="1.5"
                   />

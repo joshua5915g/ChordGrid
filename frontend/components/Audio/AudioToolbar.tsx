@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, ArrowDown, ArrowUp, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowUp, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { audioStrummer } from '@/lib/audio/StrummerEngine';
 
 interface AudioToolbarProps {
