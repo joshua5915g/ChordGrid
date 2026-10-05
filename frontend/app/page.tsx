@@ -13,15 +13,17 @@ import { VoicingNavigator } from '@/components/Controls/VoicingNavigator';
 import { FretboardOptions } from '@/components/Controls/FretboardOptions';
 import { AudioToolbar } from '@/components/Audio/AudioToolbar';
 import { ChordInspector } from '@/components/UI/ChordInspector';
-import { getChordVoicing } from '@/src/lib/chords';
-import type { InstrumentTuning } from '@/src/types/chord';
-import Fretboard from '@/src/components/Fretboard';
-import { Strummer } from '@/src/components/Strummer';
+import { SvgFretboard } from '@/components/Fretboard/SvgFretboard';
+import { ScaleExplorer } from '@/components/Controls/ScaleExplorer';
+import { ScaleOverlayMode } from '@/lib/scales';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
   const [root, setRoot] = useState<string>('C');
   const [quality, setQuality] = useState<string>('maj');
+  const [scaleRoot, setScaleRoot] = useState<string>('C');
+  const [scaleId, setScaleId] = useState<string>('major');
+  const [scaleMode, setScaleMode] = useState<ScaleOverlayMode>('off');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [practiceMode, setPracticeMode] = useState<boolean>(false);
@@ -218,18 +220,6 @@ export default function Home() {
     };
   }, [voicings, voicingIndex, root, quality, instrument]);
 
-  const dynamicVoicing = useMemo(() => {
-    const normalizedRoot = root as 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
-    return getChordVoicing(instrument, normalizedRoot, quality);
-  }, [instrument, root, quality]);
-
-  const fretboardTuning: InstrumentTuning = useMemo(() => ({
-    id: instrument,
-    name: selectedTuning.name,
-    strings: selectedTuning.notes,
-    fretCount: 15,
-  }), [instrument, selectedTuning.name, selectedTuning.notes]);
-
   // Compute live frequencies based on tuning + capo
   const activeFrequencies = useMemo(() => {
     return currentChord.frets.map((fret, strIdx) => {
@@ -322,15 +312,30 @@ export default function Home() {
           onTuningChange={setSelectedTuning}
         />
 
-        {/* Dynamic SVG Fretboard Visualizer */}
+        {/* Feature 1: Scale & Mode Explorer */}
+        <ScaleExplorer
+          scaleRoot={scaleRoot}
+          scaleId={scaleId}
+          scaleMode={scaleMode}
+          onScaleRootChange={setScaleRoot}
+          onScaleIdChange={setScaleId}
+          onScaleModeChange={setScaleMode}
+        />
+
+        {/* Interactive SVG Fretboard Visualizer */}
         <div className="w-full flex justify-center py-2">
-          <Fretboard
-            tuning={fretboardTuning}
-            voicing={dynamicVoicing}
-            width={820}
-            height={260}
-            activeColor="#F59E0B"
-            fretRange={15}
+          <SvgFretboard
+            chord={currentChord}
+            tuning={selectedTuning}
+            orientation={orientation}
+            isLefty={isLefty}
+            capoFret={capoFret}
+            activeStringIndex={activeStringIndex}
+            onFretClick={handleFretClick}
+            onPluckNote={handlePluckNote}
+            scaleRoot={scaleRoot}
+            scaleId={scaleId}
+            scaleMode={scaleMode}
           />
         </div>
 
@@ -339,17 +344,6 @@ export default function Home() {
           frequencies={activeFrequencies}
           frets={currentChord.frets}
           onPlayString={(idx) => {
-            setActiveStringIndex(idx);
-            setTimeout(() => {
-              setActiveStringIndex((prev) => (prev === idx ? null : prev));
-            }, 250);
-          }}
-        />
-
-        <Strummer
-          frequencies={activeFrequencies}
-          frets={currentChord.frets}
-          onStringPlay={(idx) => {
             setActiveStringIndex(idx);
             setTimeout(() => {
               setActiveStringIndex((prev) => (prev === idx ? null : prev));

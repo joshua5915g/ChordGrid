@@ -3,6 +3,7 @@
 import React, { useMemo, useId } from 'react';
 import { ChordFingering, Tuning } from '@/lib/types';
 import { fretToFrequency } from '@/lib/audio/StrummerEngine';
+import { ScaleOverlayMode, getScaleNotesAndDegrees, getFretNote, getChordNotes } from '@/lib/scales';
 
 interface SvgFretboardProps {
   chord: ChordFingering;
@@ -13,6 +14,9 @@ interface SvgFretboardProps {
   activeStringIndex?: number | null;
   onFretClick?: (stringIndex: number, fret: number) => void;
   onPluckNote?: (stringIndex: number, fret: number, freq: number) => void;
+  scaleRoot?: string;
+  scaleId?: string;
+  scaleMode?: ScaleOverlayMode;
 }
 
 export const SvgFretboard: React.FC<SvgFretboardProps> = ({
@@ -24,6 +28,9 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
   activeStringIndex = null,
   onFretClick,
   onPluckNote,
+  scaleRoot = 'C',
+  scaleId = 'major',
+  scaleMode = 'off',
 }) => {
   const uid = useId().replace(/:/g, '');
   const numStrings = chord.instrument === 'guitar' ? 6 : 4;
@@ -128,6 +135,48 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
       onPluckNote(stringIdx, fret, freq);
     }
   };
+
+  const scaleMap = useMemo(() => {
+    if (scaleMode === 'off') return new Map<string, string>();
+    return getScaleNotesAndDegrees(scaleRoot, scaleId);
+  }, [scaleRoot, scaleId, scaleMode]);
+
+  const chordNotes = useMemo(() => {
+    return getChordNotes(chord.root, chord.quality);
+  }, [chord.root, chord.quality]);
+
+  const scaleMarkers = useMemo(() => {
+    if (scaleMode === 'off') return [];
+    const list: Array<{
+      stringIndex: number;
+      fret: number;
+      note: string;
+      degree: string;
+      isRoot: boolean;
+      isChordTone: boolean;
+      isFrettedByChord: boolean;
+    }> = [];
+
+    strings.forEach((strIdx) => {
+      const openNote = tuning.notes[strIdx] || 'E';
+      for (let f = 1; f <= numFrets; f++) {
+        const note = getFretNote(openNote, f + capoFret);
+        if (scaleMap.has(note)) {
+          list.push({
+            stringIndex: strIdx,
+            fret: f,
+            note,
+            degree: scaleMap.get(note) || '',
+            isRoot: note === scaleRoot,
+            isChordTone: chordNotes.has(note),
+            isFrettedByChord: chord.frets[strIdx] === f,
+          });
+        }
+      }
+    });
+
+    return list;
+  }, [scaleMode, strings, tuning.notes, numFrets, capoFret, scaleMap, scaleRoot, chordNotes, chord.frets]);
 
   return (
     <div className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-2xl bg-studio-card border border-slate-700/60 shadow-studio-panel p-4 select-none">
@@ -465,6 +514,64 @@ export const SvgFretboard: React.FC<SvgFretboardProps> = ({
             }
           })}
         </g>
+
+        {/* Scale Overlay Markers */}
+        {scaleMode !== 'off' && (
+          <g id="scale-overlay-markers">
+            {scaleMarkers.map((marker) => {
+              if (marker.isFrettedByChord) return null;
+
+              const isHoriz = isHorizontal;
+              const cx = isHoriz ? getFretCenterX(marker.fret) : getVerticalStringX(marker.stringIndex);
+              const cy = isHoriz ? getStringY(marker.stringIndex) : getVerticalFretCenterY(marker.fret);
+
+              let fillColor = '#334155';
+              let strokeColor = '#64748b';
+              let textColor = '#e2e8f0';
+
+              if (marker.isRoot) {
+                fillColor = '#0891b2'; // cyan-600 root
+                strokeColor = '#38bdf8';
+                textColor = '#ffffff';
+              } else if (scaleMode === 'chord-tones' && marker.isChordTone) {
+                fillColor = '#059669'; // emerald chord tone
+                strokeColor = '#34d399';
+                textColor = '#ffffff';
+              }
+
+              const displayLabel = scaleMode === 'degrees' ? marker.degree : marker.note;
+
+              return (
+                <g
+                  key={`scale-${marker.stringIndex}-${marker.fret}`}
+                  className="cursor-pointer transition-transform hover:scale-125"
+                  onClick={() => handlePluck(marker.stringIndex, marker.fret)}
+                >
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r="8.5"
+                    fill={fillColor}
+                    stroke={strokeColor}
+                    strokeWidth="1.2"
+                    opacity={marker.isRoot || (scaleMode === 'chord-tones' && marker.isChordTone) ? 0.95 : 0.75}
+                  />
+                  <text
+                    x={cx}
+                    y={cy + 3.5}
+                    textAnchor="middle"
+                    fill={textColor}
+                    fontSize="9.5"
+                    fontWeight="700"
+                    fontFamily="monospace"
+                  >
+                    {displayLabel}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        )}
 
         {/* Active Note Markers (Amber Dots with Finger Numbers) */}
         <g id="active-markers">
