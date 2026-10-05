@@ -5,9 +5,10 @@ import { Music4, Wifi, WifiOff, Github } from 'lucide-react';
 
 interface HeaderProps {
   isBackendConnected: boolean;
+  onOpenQuiz?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ isBackendConnected }) => {
+export const Header: React.FC<HeaderProps> = ({ isBackendConnected, onOpenQuiz }) => {
   return (
     <header className="flex items-center justify-between py-4 px-6 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
       <div className="flex items-center gap-3">
@@ -27,7 +28,18 @@ export const Header: React.FC<HeaderProps> = ({ isBackendConnected }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
+        {/* Practice Quiz Trigger */}
+        {onOpenQuiz && (
+          <button
+            onClick={onOpenQuiz}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 text-xs font-bold shadow-glow-amber transition-all transform active:scale-95"
+            title="Launch Chord Quiz & Ear Training Challenge"
+          >
+            <span>🏆 Quiz Mode</span>
+          </button>
+        )}
+
         {/* Backend Status indicator */}
         <div
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
@@ -38,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ isBackendConnected }) => {
           title={isBackendConnected ? 'Connected to FastAPI backend' : 'Running in local client offline fallback'}
         >
           {isBackendConnected ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
-          <span>{isBackendConnected ? 'Backend Live' : 'Client Mode'}</span>
+          <span className="hidden sm:inline">{isBackendConnected ? 'Backend Live' : 'Client Mode'}</span>
         </div>
 
         {/* GitHub link */}

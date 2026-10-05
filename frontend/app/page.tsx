@@ -18,11 +18,13 @@ import { ScaleExplorer } from '@/components/Controls/ScaleExplorer';
 import { ScaleOverlayMode } from '@/lib/scales';
 import { MetronomeStudio } from '@/components/Audio/MetronomeStudio';
 import { ProgressionArranger } from '@/components/Controls/ProgressionArranger';
+import { ChordQuizGame } from '@/components/Training/ChordQuizGame';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
   const [root, setRoot] = useState<string>('C');
   const [quality, setQuality] = useState<string>('maj');
+  const [isQuizOpen, setIsQuizOpen] = useState<boolean>(false);
   const [scaleRoot, setScaleRoot] = useState<string>('C');
   const [scaleId, setScaleId] = useState<string>('major');
   const [scaleMode, setScaleMode] = useState<ScaleOverlayMode>('off');
@@ -248,7 +250,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Header isBackendConnected={isBackendConnected} />
+      <Header
+        isBackendConnected={isBackendConnected}
+        onOpenQuiz={() => setIsQuizOpen(true)}
+      />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
         {/* Top Controls Row */}
@@ -475,6 +480,15 @@ export default function Home() {
           }}
         />
       </main>
+
+      {/* Feature 4: Interactive Chord Quiz & Ear Training Game */}
+      <ChordQuizGame
+        instrument={instrument}
+        selectedTuning={selectedTuning}
+        capoFret={capoFret}
+        isOpen={isQuizOpen}
+        onClose={() => setIsQuizOpen(false)}
+      />
 
       <footer className="mt-auto py-6 border-t border-slate-900 text-center text-xs text-slate-500">
         <p>ChordGrid Studio Acoustic &bull; Built with Next.js 15, React 19, Web Audio API &amp; FastAPI</p>
