@@ -16,6 +16,7 @@ import { ChordInspector } from '@/components/UI/ChordInspector';
 import { SvgFretboard } from '@/components/Fretboard/SvgFretboard';
 import { ScaleExplorer } from '@/components/Controls/ScaleExplorer';
 import { ScaleOverlayMode } from '@/lib/scales';
+import { MetronomeStudio } from '@/components/Audio/MetronomeStudio';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
@@ -350,6 +351,9 @@ export default function Home() {
             }, 250);
           }}
         />
+
+        {/* Feature 2: Studio Audio Metronome */}
+        <MetronomeStudio />
 
         {/* Chord Selector & Inspector Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
