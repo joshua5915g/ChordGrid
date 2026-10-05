@@ -17,6 +17,7 @@ import { SvgFretboard } from '@/components/Fretboard/SvgFretboard';
 import { ScaleExplorer } from '@/components/Controls/ScaleExplorer';
 import { ScaleOverlayMode } from '@/lib/scales';
 import { MetronomeStudio } from '@/components/Audio/MetronomeStudio';
+import { ProgressionArranger } from '@/components/Controls/ProgressionArranger';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
@@ -27,14 +28,6 @@ export default function Home() {
   const [scaleMode, setScaleMode] = useState<ScaleOverlayMode>('off');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [practiceMode, setPracticeMode] = useState<boolean>(false);
-  const [progression, setProgression] = useState<Array<[string, string]>>([
-    ['C', 'maj'],
-    ['G', 'maj'],
-    ['A', 'min'],
-    ['F', 'maj'],
-  ]);
-  const [progressionIndex, setProgressionIndex] = useState<number>(0);
   const [customTuningText, setCustomTuningText] = useState<string>('E A D G B E');
   const [voicings, setVoicings] = useState<ChordFingering[]>([]);
   const [voicingIndex, setVoicingIndex] = useState<number>(0);
@@ -135,36 +128,6 @@ export default function Home() {
       .filter((item) => item.root && item.quality),
     [favorites]
   );
-
-  const progressionLabels = useMemo(
-    () => progression.map(([progRoot, progQuality]) => `${progRoot}${progQuality === 'maj' ? '' : progQuality}`),
-    [progression]
-  );
-
-  useEffect(() => {
-    if (!practiceMode) return;
-
-    const intervalId = window.setInterval(() => {
-      setProgressionIndex((prev) => {
-        const nextIndex = prev + 1 >= progression.length ? 0 : prev + 1;
-        const [nextRoot, nextQuality] = progression[nextIndex] || progression[0];
-        if (nextRoot && nextQuality) {
-          setRoot(nextRoot);
-          setQuality(nextQuality);
-        }
-        return nextIndex;
-      });
-    }, 2600);
-
-    return () => window.clearInterval(intervalId);
-  }, [practiceMode, progression]);
-
-  const addToProgression = useCallback(() => {
-    setProgression((prev) => {
-      const next = [...prev, [root, quality] as [string, string]];
-      return next.length > 8 ? next.slice(-8) : next;
-    });
-  }, [root, quality]);
 
   const applyCustomTuning = useCallback(() => {
     const notes = customTuningText
@@ -430,7 +393,6 @@ export default function Home() {
                           onClick={() => {
                             setRoot(r);
                             setQuality(q);
-                            setPracticeMode(false);
                           }}
                           className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
                             root === r && quality === q
@@ -444,63 +406,6 @@ export default function Home() {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/70 p-3">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="text-xs uppercase tracking-wider font-bold text-slate-400">Practice Mode</span>
-                  <button
-                    onClick={() => setPracticeMode((prev) => !prev)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                      practiceMode ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-200'
-                    }`}
-                  >
-                    {practiceMode ? 'Pause' : 'Start'}
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {progressionLabels.map((label, idx) => (
-                    <button
-                      key={`${label}-${idx}`}
-                      onClick={() => {
-                        setProgressionIndex(idx);
-                        const [nextRoot, nextQuality] = progression[idx] || ['C', 'maj'];
-                        setRoot(nextRoot);
-                        setQuality(nextQuality);
-                      }}
-                      className={`rounded-lg px-2.5 py-1.5 text-xs font-bold ${
-                        progressionIndex === idx ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={addToProgression}
-                    className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-200"
-                  >
-                    Add Current Chord
-                  </button>
-                  <button
-                    onClick={() => {
-                      setProgression([
-                        ['C', 'maj'],
-                        ['G', 'maj'],
-                        ['A', 'min'],
-                        ['F', 'maj'],
-                      ]);
-                      setProgressionIndex(0);
-                      setPracticeMode(false);
-                    }}
-                    className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-300"
-                  >
-                    Reset
-                  </button>
-                </div>
               </div>
 
               <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/70 p-3">
@@ -550,6 +455,25 @@ export default function Home() {
             }}
           />
         </div>
+
+        {/* Feature 3: Progression Arranger & Rhythm Strummer */}
+        <ProgressionArranger
+          instrument={instrument}
+          currentRoot={root}
+          currentQuality={quality}
+          selectedTuning={selectedTuning}
+          capoFret={capoFret}
+          onSelectChord={(r, q) => {
+            setRoot(r);
+            setQuality(q);
+          }}
+          onStringPluckVisual={(idx) => {
+            setActiveStringIndex(idx);
+            setTimeout(() => {
+              setActiveStringIndex((prev) => (prev === idx ? null : prev));
+            }, 250);
+          }}
+        />
       </main>
 
       <footer className="mt-auto py-6 border-t border-slate-900 text-center text-xs text-slate-500">
