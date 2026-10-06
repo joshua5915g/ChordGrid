@@ -1,4 +1,4 @@
-﻿# ChordGrid
+# ChordGrid
 
 Interactive guitar and ukulele chord explorer with a live fretboard, alternate tunings, capo controls, and browser-based audio playback.
 
@@ -16,17 +16,17 @@ ChordGrid is a full-stack music practice app for guitar and ukulele players. It 
 
 The app is built around a Next.js frontend and a FastAPI backend. The frontend handles the visual fretboard, controls, and sound engine, while the backend serves chord data, tuning presets, and reverse-chord identification based on a selected finger pattern.
 
-## Features
+## Core & Pro Features
 
-- Dual instrument support for guitar and ukulele
-- Interactive SVG fretboard with accurate fret spacing and note layout
-- Alternate tunings including Drop D, DADGAD, Open G, and more
-- Capo and left-handed viewing options
-- Multiple voicing navigation for each chord
-- Strum, arpeggio, and rhythm control
-- Reverse chord detection from custom fret input
-- Offline fallback chord data for a smoother local experience
-- Dark, studio-inspired UI optimized for practice and learning
+- **Dual Instrument Engine**: Full support for both 6-string guitar and 4-string ukulele.
+- **Interactive SVG Fretboard**: Accurate acoustic fret spacing, wood grain styling, string gauges, left-handed viewing, capo bars, and touch/click note plucking.
+- **Interactive Scale & Mode Explorer**: Overlay major, minor, pentatonic, blues, and modal scales across the neck with note names, scale degrees, and chord-tone highlights.
+- **Precision Web Audio Metronome Studio**: Sample-accurate lookahead audio scheduling, acoustic clicks with downbeat accents, tap tempo calculator, visual pulse indicators, and time signatures (4/4, 3/4, 2/4, 6/8).
+- **Automated Progression Arranger & Rhythm Strummer**: Sequencer with selectable strumming patterns (Folk/Pop, Arpeggio, Straight 4/4, Waltz, Reggae), continuous loop mode, and one-click song chart (.txt) / ChordPro export.
+- **Chord Mastery Challenge Game**: Gamified ear training and fretboard shape recognition quiz with difficulty levels, streak rewards, and celebratory confetti.
+- **HD Diagram Exporter & Share Studio**: Download 2x Retina PNG and vector SVG chord cards with fingering and tuning info, plus deep-linked URLs that restore exact chord and capo states.
+- **Reverse Chord Detection**: Identifies chord candidates in real-time from custom fret patterns.
+- **Offline Fallback Architecture**: Seamless operation even when disconnected from the FastAPI backend.
 
 ## Tech Stack
 
