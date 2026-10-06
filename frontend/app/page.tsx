@@ -19,6 +19,7 @@ import { ScaleOverlayMode } from '@/lib/scales';
 import { MetronomeStudio } from '@/components/Audio/MetronomeStudio';
 import { ProgressionArranger } from '@/components/Controls/ProgressionArranger';
 import { ChordQuizGame } from '@/components/Training/ChordQuizGame';
+import { ChordExportStudio } from '@/components/UI/ChordExportStudio';
 
 export default function Home() {
   const [instrument, setInstrument] = useState<InstrumentType>('guitar');
@@ -79,6 +80,39 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem('chordgrid-favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // Read deep-link share parameters from URL on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const paramInst = params.get('inst');
+      const paramRoot = params.get('root');
+      const paramQuality = params.get('quality');
+      const paramVoicing = params.get('voicing');
+      const paramCapo = params.get('capo');
+
+      if (paramInst === 'guitar' || paramInst === 'ukulele') {
+        setInstrument(paramInst);
+      }
+      if (paramRoot) {
+        setRoot(paramRoot);
+      }
+      if (paramQuality) {
+        setQuality(paramQuality);
+      }
+      if (paramVoicing) {
+        const vIdx = parseInt(paramVoicing, 10);
+        if (!isNaN(vIdx)) setVoicingIndex(vIdx);
+      }
+      if (paramCapo) {
+        const cFret = parseInt(paramCapo, 10);
+        if (!isNaN(cFret)) setCapoFret(cFret);
+      }
+    } catch {
+      // Ignore URL parsing errors
+    }
+  }, []);
 
   // Update selected tuning when instrument changes
   useEffect(() => {
@@ -446,19 +480,30 @@ export default function Home() {
             </div>
           </div>
 
-          <ChordInspector
-            chord={currentChord}
-            tuning={selectedTuning}
-            capoFret={capoFret}
-            identifiedCandidates={identifiedCandidates}
-            onSelectCandidate={(cand) => {
-              setRoot(cand.root);
-              setQuality(cand.quality);
-            }}
-            onPluckString={(idx, fret, freq) => {
-              handlePluckNote(idx, fret, freq);
-            }}
-          />
+          <div className="flex flex-col gap-6">
+            {/* Feature 5: Export & Share Studio */}
+            <ChordExportStudio
+              chord={currentChord}
+              tuning={selectedTuning}
+              instrument={instrument}
+              capoFret={capoFret}
+              voicingIndex={voicingIndex}
+            />
+
+            <ChordInspector
+              chord={currentChord}
+              tuning={selectedTuning}
+              capoFret={capoFret}
+              identifiedCandidates={identifiedCandidates}
+              onSelectCandidate={(cand) => {
+                setRoot(cand.root);
+                setQuality(cand.quality);
+              }}
+              onPluckString={(idx, fret, freq) => {
+                handlePluckNote(idx, fret, freq);
+              }}
+            />
+          </div>
         </div>
 
         {/* Feature 3: Progression Arranger & Rhythm Strummer */}
