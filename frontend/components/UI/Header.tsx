@@ -1,14 +1,47 @@
 'use client';
 
-import React from 'react';
-import { Music4, Wifi, WifiOff, Github } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Music4, Wifi, WifiOff, Github, Hand } from 'lucide-react';
 
 interface HeaderProps {
   isBackendConnected: boolean;
   onOpenQuiz?: () => void;
+  isLeftHanded?: boolean;
+  onToggleLeftHanded?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ isBackendConnected, onOpenQuiz }) => {
+const LEFT_HANDED_STORAGE_KEY = 'chordgrid-left-handed';
+
+export const Header: React.FC<HeaderProps> = ({
+  isBackendConnected,
+  onOpenQuiz,
+  isLeftHanded,
+  onToggleLeftHanded,
+}) => {
+  const [internalLeftHanded, setInternalLeftHanded] = useState<boolean>(false);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(LEFT_HANDED_STORAGE_KEY);
+    if (saved !== null) {
+      setInternalLeftHanded(saved === 'true');
+    }
+  }, []);
+
+  const leftHanded = isLeftHanded ?? internalLeftHanded;
+
+  useEffect(() => {
+    window.localStorage.setItem(LEFT_HANDED_STORAGE_KEY, String(leftHanded));
+  }, [leftHanded]);
+
+  const handleToggleLeftHanded = () => {
+    if (onToggleLeftHanded) {
+      onToggleLeftHanded();
+      return;
+    }
+
+    setInternalLeftHanded((prev) => !prev);
+  };
+
   return (
     <header className="flex items-center justify-between py-4 px-6 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
       <div className="flex items-center gap-3">
@@ -29,7 +62,20 @@ export const Header: React.FC<HeaderProps> = ({ isBackendConnected, onOpenQuiz }
       </div>
 
       <div className="flex items-center gap-2.5">
-        {/* Practice Quiz Trigger */}
+        <button
+          type="button"
+          onClick={handleToggleLeftHanded}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-colors ${
+            leftHanded
+              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+              : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
+          }`}
+          title="Toggle left-handed fretboard"
+        >
+          <Hand className="w-3.5 h-3.5" />
+          <span>{leftHanded ? 'Left-Handed' : 'Right-Handed'}</span>
+        </button>
+
         {onOpenQuiz && (
           <button
             onClick={onOpenQuiz}
@@ -40,7 +86,6 @@ export const Header: React.FC<HeaderProps> = ({ isBackendConnected, onOpenQuiz }
           </button>
         )}
 
-        {/* Backend Status indicator */}
         <div
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
             isBackendConnected
@@ -53,7 +98,6 @@ export const Header: React.FC<HeaderProps> = ({ isBackendConnected, onOpenQuiz }
           <span className="hidden sm:inline">{isBackendConnected ? 'Backend Live' : 'Client Mode'}</span>
         </div>
 
-        {/* GitHub link */}
         <a
           href="https://github.com/joshua5915g/ChordGrid"
           target="_blank"

@@ -10,13 +10,15 @@ interface FretboardProps {
   height?: number;
   activeColor?: string;
   fretRange?: number;
+  isLeftHanded?: boolean;
 }
 
 export function buildFretboardGeometry(
   tuning: InstrumentTuning,
   width: number,
   height: number,
-  fretRange = tuning.fretCount
+  fretRange = tuning.fretCount,
+  isLeftHanded = false
 ) {
   const padding = { top: 20, right: 24, bottom: 20, left: 28 };
   const boardWidth = width - padding.left - padding.right;
@@ -24,8 +26,13 @@ export function buildFretboardGeometry(
   const stringStep = boardHeight / Math.max(tuning.strings.length - 1, 1);
   const fretStep = boardWidth / fretRange;
 
-  const stringYs = tuning.strings.map((_, index) => padding.top + index * stringStep);
-  const fretXs = Array.from({ length: fretRange + 1 }, (_, index) => padding.left + index * fretStep);
+  const stringYs = (isLeftHanded ? [...tuning.strings].reverse() : tuning.strings).map(
+    (_, index) => padding.top + index * stringStep
+  );
+  const fretXs = Array.from({ length: fretRange + 1 }, (_, index) => {
+    const xIndex = isLeftHanded ? fretRange - index : index;
+    return padding.left + xIndex * fretStep;
+  });
 
   return { padding, boardWidth, boardHeight, stringStep, fretStep, stringYs, fretXs };
 }
@@ -34,20 +41,24 @@ export function mapVoicingToMarkers(
   tuning: InstrumentTuning,
   voicing: ChordVoicing,
   width: number,
-  height: number
+  height: number,
+  isLeftHanded = false
 ): FretMarker[] {
-  const { stringYs, fretStep, padding } = buildFretboardGeometry(tuning, width, height);
+  const { stringYs, fretStep, padding } = buildFretboardGeometry(tuning, width, height, 15, isLeftHanded);
 
   return voicing.frets
     .map((fret, stringIndex) => {
       if (fret === -1) return null;
 
-      const x = padding.left + fret * fretStep + fretStep / 2;
-      const y = stringYs[stringIndex];
+      const displayStringIndex = isLeftHanded ? tuning.strings.length - 1 - stringIndex : stringIndex;
+      const x = isLeftHanded
+        ? padding.left + (15 - fret) * fretStep + fretStep / 2
+        : padding.left + fret * fretStep + fretStep / 2;
+      const y = stringYs[displayStringIndex];
 
       return {
         fret,
-        stringIndex,
+        stringIndex: displayStringIndex,
         x,
         y,
         radius: fret === 0 ? 9 : 10,
@@ -63,15 +74,16 @@ export const Fretboard: React.FC<FretboardProps> = ({
   height = 260,
   activeColor = '#F59E0B',
   fretRange = 15,
+  isLeftHanded = false,
 }) => {
   const geometry = useMemo(
-    () => buildFretboardGeometry(tuning, width, height, fretRange),
-    [tuning, width, height, fretRange]
+    () => buildFretboardGeometry(tuning, width, height, fretRange, isLeftHanded),
+    [tuning, width, height, fretRange, isLeftHanded]
   );
 
   const markers = useMemo(
-    () => mapVoicingToMarkers(tuning, voicing, width, height),
-    [tuning, voicing, width, height]
+    () => mapVoicingToMarkers(tuning, voicing, width, height, isLeftHanded),
+    [tuning, voicing, width, height, isLeftHanded]
   );
 
   const dotFretPositions = [3, 5, 7, 9, 12];
@@ -133,7 +145,9 @@ export const Fretboard: React.FC<FretboardProps> = ({
         ))}
 
         {dotFretPositions.map((fret) => {
-          const x = geometry.padding.left + (fret * geometry.fretStep) + geometry.fretStep / 2;
+          const x = isLeftHanded
+            ? geometry.padding.left + ((fretRange - fret) * geometry.fretStep) + geometry.fretStep / 2
+            : geometry.padding.left + (fret * geometry.fretStep) + geometry.fretStep / 2;
           const centerY = geometry.padding.top + geometry.boardHeight / 2;
 
           return (

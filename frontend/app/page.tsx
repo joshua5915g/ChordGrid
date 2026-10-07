@@ -40,6 +40,7 @@ export default function Home() {
 
   const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
   const [isLefty, setIsLefty] = useState<boolean>(false);
+  const [isLeftHanded, setIsLeftHanded] = useState<boolean>(false);
   const [capoFret, setCapoFret] = useState<number>(0);
 
   const [activeStringIndex, setActiveStringIndex] = useState<number | null>(null);
@@ -287,6 +288,11 @@ export default function Home() {
       <Header
         isBackendConnected={isBackendConnected}
         onOpenQuiz={() => setIsQuizOpen(true)}
+        isLeftHanded={isLeftHanded}
+        onToggleLeftHanded={() => {
+          setIsLeftHanded((prev) => !prev);
+          setIsLefty((prev) => !prev);
+        }}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
