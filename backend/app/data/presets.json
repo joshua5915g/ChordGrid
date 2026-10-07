@@ -1,0 +1,16 @@
+[
+  {
+    "id": "preset-0001",
+    "name": "Test",
+    "instrument": "guitar",
+    "chords": [
+      "C",
+      "G",
+      "Am",
+      "F"
+    ],
+    "tempo_bpm": null,
+    "created_at": "2026-10-07T14:20:43.059070Z",
+    "notes": null
+  }
+]

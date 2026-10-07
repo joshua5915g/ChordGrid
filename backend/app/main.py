@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from .api import chords as extended_chords, presets
 from .routes import chords, tunings, identify
 
 app = FastAPI(
@@ -21,6 +23,8 @@ app.add_middleware(
 app.include_router(chords.router)
 app.include_router(tunings.router)
 app.include_router(identify.router)
+app.include_router(extended_chords.router)
+app.include_router(presets.router)
 
 @app.get("/api/health")
 async def health_check():
